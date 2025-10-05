@@ -1,5 +1,9 @@
 # sis457_pasteleria - Sistema de Gestión de Pedidos para Pastelería "Carmen"
 
+<p align="center">
+    <img src="./assets/logo.png" alt="Logo de la Pasteleria Carmen" width="200" style="border-radius: 50%; object-fit: cover; aspect-ratio: 1/1;"/>
+</p>
+
 ## 🍰 Descripción del Proyecto
 
 Este proyecto consiste en el desarrollo de un **Sistema de Gestión de Pedidos y Ventas** diseñado específicamente para la pastelería **"Carmen, ¡Un pedacito del cielo!"**.
@@ -18,7 +22,7 @@ El sistema implementa una arquitectura de **3 capas** para una separación clara
 
 ### 🎯 Funcionalidad Principal
 
-La funcionalidad central y de mayor prioridad es el **Registro de Pedidos/Ventas**.
+La funcionalidad central y de mayor prioridad es el **Registro de Ventas**.
 
 ---
 
@@ -28,9 +32,9 @@ El modelo de datos se basa en las siguientes entidades clave:
 
 | Entidad | Propósito | Campos Clave (CRUD) | Eliminación Lógica | Observaciones |
 | :--- | :--- | :--- | :--- | :--- |
-| **Usuario** | Autenticación y Login al sistema. | `IdUsuario`, `Usuario`, `Clave`, `Rol` | **Sí** (`Estado`) | |
-| **Producto** | Catálogo de pastelería disponible para la venta. | `IdProducto`, `Nombre`, `PrecioUnitario`, `TipoProducto` | **Sí** (`Estado`) | |
-| **Cliente** | Contactos para la gestión de pedidos. | `IdCliente`, `NombreCompleto`, `Telefono`, `Email`, `Direccion` | **Sí** (`Estado`) | |
+| **Usuario** | Autenticación y Login al sistema. | `IdUsuario`, `Usuario`, `Clave`, `Rol` | **Sí** (`Estado`) | Estado |
+| **Producto** | Catálogo de pastelería disponible para la venta. | `IdProducto`, `Nombre`, `PrecioUnitario`, `TipoProducto` | **Sí** (`Estado`) | Estado |
+| **Cliente** | Contactos para la gestión de pedidos. | `IdCliente`, `NombreCompleto`, `Telefono`, `Email`, `Direccion` | **Sí** (`Estado`) | Estado |
 | **Pedido** | Cabecera de la transacción de venta. | `IdPedido`, `FechaEntrega`, `Total`, `IdCliente`, `IdUsuario` | **No** | Registro Histórico. |
 | **DetallePedido** | Detalle de los productos incluidos en cada pedido. | `IdDetallePedido`, `IdPedido`, `IdProducto`, `Cantidad` | **No** | Detalle de Registro. |
 
@@ -40,12 +44,12 @@ El modelo de datos se basa en las siguientes entidades clave:
 
 Este es el plan de trabajo con las fechas límite para cada hito:
 
-| Hito | Fecha Límite | Tarea a Completar |
-| :--- | :--- | :--- |
-| **1** | **06/10/2025** | Creación de Repositorio y `README.md`. |
-| **2** | **13/10/2025** | Implementación de la Capa de Acceso a Datos (CAD) y consolidación de la estructura de las entidades. |
-| **3** | **20/10/2025** | Implementación de la Capa Lógica de Negocios (CLN) y diseño inicial de interfaces (Menú, Vistas de CRUD). |
-| **4** | **27/10/2025** | CRUD completo de las entidades **Producto** y **Cliente**. Login funcional y Menú Principal implementados. |
-| **5** | **03/11/2025** | Funcionalidad de **Pedido/Venta** inicial. |
-| **6** | **10/11/2025** | Refinación y pruebas de la funcionalidad de **Pedido/Venta** y Documentación inicial del proyecto. |
-| **7** | **17/11/2025** | **Presentación final** del laboratorio. |
+| Hito | Fecha Límite | Tarea a Completar | Estado |
+| :--- | :--- | :--- | :--- |
+| **1** | **06/10/2025** | Creación de Repositorio y `README.md`. | ✔️ Completado |
+| **2** | **13/10/2025** | Implementación de la Capa de Acceso a Datos (CAD) y consolidación de la estructura de las entidades. | En progreso (Este archivo) | Pendiente |
+| **3** | **20/10/2025** | Implementación de la Capa Lógica de Negocios (CLN) y diseño inicial de interfaces (Menú, Vistas de CRUD). | Pendiente |
+| **4** | **27/10/2025** | CRUD completo de las entidades **Producto** y **Cliente**. Login funcional y Menú Principal implementados. | Pendiente |
+| **5** | **03/11/2025** | Funcionalidad de **Pedido/Venta** inicial. | Pendiente |
+| **6** | **10/11/2025** | Refinación y pruebas de la funcionalidad de **Pedido/Venta** y Documentación inicial del proyecto. | Pendiente |
+| **7** | **17/11/2025** | **Presentación final** del laboratorio. | Pendiente |
