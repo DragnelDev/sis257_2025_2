@@ -32,9 +32,9 @@ El modelo de datos se basa en las siguientes entidades clave:
 
 | Entidad | Propósito | Campos Clave (CRUD) | Eliminación Lógica | Observaciones |
 | :--- | :--- | :--- | :--- | :--- |
-| **Usuario** | Autenticación y Login al sistema. | `IdUsuario`, `Usuario`, `Clave`, `Rol` | **Sí** (`Estado`) | Estado |
-| **Producto** | Catálogo de pastelería disponible para la venta. | `IdProducto`, `Nombre`, `PrecioUnitario`, `TipoProducto` | **Sí** (`Estado`) | Estado |
-| **Cliente** | Contactos para la gestión de pedidos. | `IdCliente`, `NombreCompleto`, `Telefono`, `Email`, `Direccion` | **Sí** (`Estado`) | Estado |
+| **Usuario** | Autenticación y Login al sistema. | `IdUsuario`, `Usuario`, `Clave`, `Rol` | **Sí** (`Estado`) |  |
+| **Producto** | Catálogo de pastelería disponible para la venta. | `IdProducto`, `Nombre`, `PrecioUnitario`, `TipoProducto` | **Sí** (`Estado`) |  |
+| **Cliente** | Contactos para la gestión de pedidos. | `IdCliente`, `NombreCompleto`, `Telefono`, `Email`, `Direccion` | **Sí** (`Estado`) |  |
 | **Pedido** | Cabecera de la transacción de venta. | `IdPedido`, `FechaEntrega`, `Total`, `IdCliente`, `IdUsuario` | **No** | Registro Histórico. |
 | **DetallePedido** | Detalle de los productos incluidos en cada pedido. | `IdDetallePedido`, `IdPedido`, `IdProducto`, `Cantidad` | **No** | Detalle de Registro. |
 
