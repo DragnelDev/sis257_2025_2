@@ -1,0 +1,483 @@
+<!-- Chosen Palette: Warm Neutrals & Cream (BG: #FFFBEB, Accent: #F59E0B, Primary Text: #44403C) -->
+<!-- Application Structure Plan: Dashboard con enfoque en Exploración y Simulación. Estructura: 1. Navegación (fija). 2. Sección de Exploración/Catálogo (vista principal). 3. Sección de Comparativa de Precios (Visualización de datos). 4. Sección de Simulador de Pedido (Tarea transaccional). Esta estructura, diferente al reporte lineal, prioriza la TAREA del usuario (¿Qué venden? ¿Cuánto cuesta? ¿Cuánto me sale?) y facilita la interactividad mediante pestañas y filtros. -->
+<!-- Visualization & Content Choices: Summary: Report Info -> Goal -> Viz/Presentation Method -> Interaction -> Justification -> Library/Method - Confirming NO SVG/Mermaid. -->
+<!-- 1. Catálogo de Productos -> Informar/Organizar -> HTML Grid Cards -> Selector de Categoría (Filtro) -> Permite al usuario ver solo Tortas, Tartas o Cupcakes, mejorando la navegación y enfocando la exploración. -> Vanilla JS. -->
+<!-- 2. Comparativa de Precios -> Comparar/Organizar -> Gráfico de Barras Horizontales -> Ninguna (Estatica) -> Muestra la dispersión de precios base por categoría en una vista rápida, ideal para comparación visual. -> Chart.js (Canvas). -->
+<!-- 3. Simulador de Pedido -> Tarea/Calcular -> HTML Listado Dinámico -> Inputs de Cantidad, Botón de Añadir/Quitar, Cálculo Dinámico -> Permite al usuario sintetizar la información y calcular un costo total, cumpliendo con el requisito de "Compra/Venta". -> Vanilla JS. -->
+<!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pastelería Carmen | Explorador de Catálogo y Pedidos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+    <style>
+        /* Estilos base para el cuerpo */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FFFBEB; /* Creamy background */
+            color: #44403C;
+        }
+        /* Estilo específico para contenedores de gráficos Chart.js */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px; /* Altura base para escritorio */
+            max-height: 400px;
+        }
+        @media (max-width: 767px) {
+            .chart-container {
+                height: 300px; /* Altura menor para móviles */
+            }
+        }
+        /* Clase para pestañas activas */
+        .tab-active {
+            border-bottom-width: 3px;
+            border-color: #F59E0B; /* Color Naranja de acento */
+            color: #44403C;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <!-- Navegación Fija (Encabezado) -->
+    <header class="sticky top-0 z-10 bg-white shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-[#F59E0B]">
+                🍰 Pastelería Carmen
+            </h1>
+            <nav class="hidden md:flex space-x-8">
+                <button onclick="scrollToSection('explorer')" class="text-lg hover:text-[#F59E0B] transition">Catálogo</button>
+                <button onclick="scrollToSection('stats')" class="text-lg hover:text-[#F59E0B] transition">Precios</button>
+                <button onclick="scrollToSection('simulator')" class="text-lg hover:text-[#F59E0B] transition">Hacer Pedido</button>
+            </nav>
+        </div>
+        <!-- Navegación Móvil (Pestañas) -->
+        <div class="md:hidden flex justify-around border-t border-gray-100 bg-white">
+            <button id="tab-explorer" onclick="showSection('explorer')" class="tab-button w-full py-3 text-sm transition text-gray-600 border-b-2 border-transparent">
+                Explorar
+            </button>
+            <button id="tab-stats" onclick="showSection('stats')" class="tab-button w-full py-3 text-sm transition text-gray-600 border-b-2 border-transparent">
+                Comparar
+            </button>
+            <button id="tab-simulator" onclick="showSection('simulator')" class="tab-button w-full py-3 text-sm transition text-gray-600 border-b-2 border-transparent">
+                Simular
+            </button>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+
+        <!-- Sección 1: Exploración del Catálogo -->
+        <section id="explorer" class="app-section mb-16 pt-4">
+            <h2 class="text-4xl font-extrabold mb-4 text-[#78350F] border-b pb-2 border-amber-200">
+                Catálogo Interactivo 🔎
+            </h2>
+            <p class="text-lg mb-8 text-gray-700">
+                Explora nuestra variedad de productos: Tortas, Tartas y Cupcakes. Utiliza el filtro para centrarte en la categoría que más te interese. Esta sección te permite visualizar el catálogo completo de "Pastelería Carmen" de forma dinámica y organizada.
+            </p>
+
+            <!-- Filtro de Categoría -->
+            <div class="flex flex-col sm:flex-row justify-between items-center bg-white p-4 rounded-xl shadow-md mb-8">
+                <label for="categoryFilter" class="text-lg font-medium mr-4">Filtrar por Tipo:</label>
+                <select id="categoryFilter" class="mt-2 sm:mt-0 p-2 border border-amber-300 rounded-lg focus:ring-[#F59E0B] focus:border-[#F59E0B] transition">
+                    <option value="Todos">Todos los Productos</option>
+                    <option value="Torta">Tortas (Pasteles)</option>
+                    <option value="Tarta/Pie">Tartas y Pies</option>
+                    <option value="Cupcake">Cupcakes</option>
+                </select>
+            </div>
+
+            <!-- Contenedor de Tarjetas de Productos -->
+            <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Las tarjetas de productos se inyectarán aquí con JavaScript -->
+            </div>
+        </section>
+
+        <!-- Sección 2: Análisis y Comparativa de Precios -->
+        <section id="stats" class="app-section hidden mb-16 pt-4">
+            <h2 class="text-4xl font-extrabold mb-4 text-[#78350F] border-b pb-2 border-amber-200">
+                Análisis y Comparativa de Precios 📊
+            </h2>
+            <p class="text-lg mb-8 text-gray-700">
+                Esta gráfica muestra el precio unitario base de los productos clasificados por su tipo. Permite al usuario comprender la estructura de precios de la pastelería y comparar visualmente las categorías (Tortas vs. Tartas vs. Cupcakes) para facilitar la toma de decisiones al hacer un pedido.
+            </p>
+
+            <div class="bg-white p-6 rounded-xl shadow-lg">
+                <h3 class="text-2xl font-semibold mb-4 text-center">Precios Promedio por Categoría (Bs)</h3>
+                <div class="chart-container">
+                    <canvas id="priceComparisonChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Datos Secundarios de Análisis -->
+            <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-amber-50 p-4 rounded-xl shadow-sm border border-amber-200">
+                    <p class="text-sm font-medium text-amber-700">Mayor Precio Base:</p>
+                    <p class="text-2xl font-bold" id="statMaxPrice">195.00 Bs</p>
+                </div>
+                <div class="bg-amber-50 p-4 rounded-xl shadow-sm border border-amber-200">
+                    <p class="text-sm font-medium text-amber-700">Menor Precio Base:</p>
+                    <p class="text-2xl font-bold" id="statMinPrice">15.00 Bs</p>
+                </div>
+                <div class="bg-amber-50 p-4 rounded-xl shadow-sm border border-amber-200">
+                    <p class="text-sm font-medium text-amber-700">Total de Variedades:</p>
+                    <p class="text-2xl font-bold" id="statTotalProducts">6</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección 3: Simulador de Pedido (Compra/Venta) -->
+        <section id="simulator" class="app-section hidden mb-16 pt-4">
+            <h2 class="text-4xl font-extrabold mb-4 text-[#78350F] border-b pb-2 border-amber-200">
+                Simulador de Pedido 🛒
+            </h2>
+            <p class="text-lg mb-8 text-gray-700">
+                Utiliza esta herramienta para simular tu pedido y obtener un costo total estimado (funcionalidad de Venta). Puedes añadir productos directamente desde el catálogo (Sección 1) o utilizar el selector inferior. El objetivo es darte una idea clara del costo de tu compra.
+            </p>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Columna 1: Panel de Selección Rápida -->
+                <div class="lg:col-span-1 bg-white p-6 rounded-xl shadow-lg h-fit sticky top-20">
+                    <h3 class="text-2xl font-semibold mb-4 text-amber-800">Añadir Rápido</h3>
+                    <div class="space-y-4">
+                        <label for="quickSelect" class="block text-sm font-medium text-gray-700">Selecciona Producto:</label>
+                        <select id="quickSelect" class="w-full p-2 border border-gray-300 rounded-lg"></select>
+
+                        <label for="quickQuantity" class="block text-sm font-medium text-gray-700">Cantidad:</label>
+                        <input type="number" id="quickQuantity" value="1" min="1" class="w-full p-2 border border-gray-300 rounded-lg">
+
+                        <button onclick="addProductToCartFromSelect()" class="w-full bg-[#F59E0B] text-white py-2 rounded-lg font-bold hover:bg-amber-600 transition shadow-md">
+                            Añadir al Pedido
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Columna 2: Resumen del Pedido -->
+                <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-lg">
+                    <h3 class="text-2xl font-semibold mb-4 text-amber-800">Resumen del Pedido</h3>
+                    
+                    <ul id="cartItems" class="divide-y divide-amber-100 min-h-[100px]">
+                        <li id="emptyCartMessage" class="py-4 text-center text-gray-500 italic">Tu pedido está vacío. ¡Añade algo delicioso!</li>
+                        <!-- Elementos del carrito inyectados aquí -->
+                    </ul>
+
+                    <div class="mt-6 pt-4 border-t-2 border-amber-200 flex justify-between items-center">
+                        <span class="text-xl font-semibold">Total Estimado:</span>
+                        <span id="cartTotal" class="text-3xl font-extrabold text-[#78350F]">0.00 Bs</span>
+                    </div>
+
+                    <button class="w-full mt-6 bg-[#D97706] text-white py-3 rounded-lg font-bold text-lg hover:bg-[#B45309] transition shadow-lg">
+                        Finalizar Simulación de Pedido
+                    </button>
+                    <p class="text-sm text-gray-500 text-center mt-2">Este es un simulador. No es un pedido real.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        const productsData = [
+            { id: 1, name: 'Torta 5 Leches', type: 'Torta', price: 180.00, desc: 'Torta mediana, clásica y húmeda de 5 leches.', imageUrl: 'URL_IMG_TORTA_5_LECHES' },
+            { id: 2, name: 'Torta de Chocolate', type: 'Torta', price: 195.00, desc: 'Pastel mediano de chocolate intenso.', imageUrl: 'URL_IMG_TORTA_CHOCOLATE' },
+            { id: 3, name: 'Tarta de Manzana', type: 'Tarta/Pie', price: 90.00, desc: 'Tarta de manzana grande con masa crujiente.', imageUrl: 'URL_IMG_TARTA_MANZANA' },
+            { id: 4, name: 'Pie de Limón', type: 'Tarta/Pie', price: 85.00, desc: 'Pie grande de limón refrescante con merengue.', imageUrl: 'URL_IMG_PIE_LIMON' },
+            { id: 5, name: 'Cupcake de Chocolate', type: 'Cupcake', price: 15.00, desc: 'Cupcake individual de chocolate con glaseado cremoso.', imageUrl: 'URL_IMG_CUPCAKE_CHOCO' },
+            { id: 6, name: 'Cupcake de Vainilla', type: 'Cupcake', price: 15.00, desc: 'Cupcake individual de vainilla.', imageUrl: 'URL_IMG_CUPCAKE_VANI' },
+        ];
+
+        let currentCart = {};
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderProducts(productsData);
+            setupCategoryFilter();
+            setupQuickSelect();
+            renderPriceComparisonChart();
+            updateStats();
+            // Mostrar la sección inicial
+            showSection('explorer');
+        });
+
+        // ------------------
+        // Lógica de Navegación y Estructura
+        // ------------------
+
+        function showSection(targetId) {
+            const sections = document.querySelectorAll('.app-section');
+            sections.forEach(section => {
+                section.classList.add('hidden');
+            });
+
+            const targetSection = document.getElementById(targetId);
+            if (targetSection) {
+                targetSection.classList.remove('hidden');
+            }
+
+            // Actualizar pestañas móviles
+            const tabs = document.querySelectorAll('.tab-button');
+            tabs.forEach(tab => {
+                tab.classList.remove('tab-active');
+            });
+            const activeTab = document.getElementById(`tab-${targetId}`);
+            if (activeTab) {
+                activeTab.classList.add('tab-active');
+            }
+
+            // Si es móvil, asegurarse de que la sección sea visible
+            if (window.innerWidth < 768) {
+                targetSection.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function scrollToSection(targetId) {
+            const targetSection = document.getElementById(targetId);
+            if (targetSection) {
+                targetSection.scrollIntoView({ behavior: 'smooth' });
+                // En escritorio, cambiar la vista de la sección oculta
+                if (window.innerWidth >= 768) {
+                    showSection(targetId);
+                }
+            }
+        }
+
+
+        // ------------------
+        // Lógica de Exploración del Catálogo
+        // ------------------
+
+        function setupCategoryFilter() {
+            const filter = document.getElementById('categoryFilter');
+            filter.addEventListener('change', (e) => {
+                const selectedType = e.target.value;
+                const filteredProducts = productsData.filter(p => selectedType === 'Todos' || p.type === selectedType);
+                renderProducts(filteredProducts);
+            });
+        }
+
+        function renderProducts(products) {
+            const grid = document.getElementById('productGrid');
+            grid.innerHTML = '';
+
+            products.forEach(p => {
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-xl shadow-lg overflow-hidden border border-amber-100 hover:shadow-xl transition duration-300';
+                card.innerHTML = `
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold text-amber-800 mb-2">${p.name}</h3>
+                        <p class="text-sm font-medium text-amber-500 mb-3">${p.type}</p>
+                        <p class="text-gray-600 mb-4">${p.desc}</p>
+                        <div class="flex justify-between items-center">
+                            <span class="text-3xl font-extrabold text-[#78350F]">${p.price.toFixed(2)} Bs</span>
+                            <button onclick="addToCart(${p.id}, '${p.name}')" class="bg-[#F59E0B] text-white px-4 py-2 rounded-lg font-semibold text-sm hover:bg-amber-600 transition shadow-md">
+                                Añadir al Pedido
+                            </button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // ------------------
+        // Lógica de Visualización (Chart.js)
+        // ------------------
+
+        function renderPriceComparisonChart() {
+            const ctx = document.getElementById('priceComparisonChart').getContext('2d');
+
+            // Agrupar y calcular promedio
+            const groupedPrices = productsData.reduce((acc, product) => {
+                if (!acc[product.type]) {
+                    acc[product.type] = [];
+                }
+                acc[product.type].push(product.price);
+                return acc;
+            }, {});
+
+            const chartData = {
+                labels: Object.keys(groupedPrices),
+                datasets: [{
+                    label: 'Precio Base (Bs)',
+                    data: Object.values(groupedPrices).map(prices => 
+                        prices.reduce((a, b) => a + b, 0) / prices.length
+                    ),
+                    backgroundColor: ['#F59E0B', '#FCD34D', '#D97706'],
+                    borderRadius: 8,
+                }]
+            };
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: chartData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y', // Barras horizontales
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.x !== null) {
+                                        label += context.parsed.x.toFixed(2) + ' Bs';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Precio Promedio (Bs)'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Tipo de Producto'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateStats() {
+            const maxPrice = Math.max(...productsData.map(p => p.price));
+            const minPrice = Math.min(...productsData.map(p => p.price));
+            const totalProducts = productsData.length;
+
+            document.getElementById('statMaxPrice').textContent = maxPrice.toFixed(2) + ' Bs';
+            document.getElementById('statMinPrice').textContent = minPrice.toFixed(2) + ' Bs';
+            document.getElementById('statTotalProducts').textContent = totalProducts;
+        }
+
+        // ------------------
+        // Lógica del Simulador de Pedido (Carrito)
+        // ------------------
+
+        function setupQuickSelect() {
+            const select = document.getElementById('quickSelect');
+            select.innerHTML = '';
+            productsData.forEach(p => {
+                const option = document.createElement('option');
+                option.value = p.id;
+                option.textContent = `${p.name} - ${p.price.toFixed(2)} Bs`;
+                select.appendChild(option);
+            });
+        }
+
+        function addProductToCartFromSelect() {
+            const select = document.getElementById('quickSelect');
+            const quantityInput = document.getElementById('quickQuantity');
+            const productId = parseInt(select.value);
+            const quantity = parseInt(quantityInput.value);
+
+            if (productId && quantity > 0) {
+                const product = productsData.find(p => p.id === productId);
+                if (product) {
+                    addToCart(productId, product.name, quantity);
+                }
+            }
+        }
+
+        function addToCart(productId, productName, quantity = 1) {
+            const product = productsData.find(p => p.id === productId);
+            if (!product) return;
+
+            if (currentCart[productId]) {
+                currentCart[productId].quantity += quantity;
+            } else {
+                currentCart[productId] = {
+                    id: productId,
+                    name: productName,
+                    price: product.price,
+                    quantity: quantity
+                };
+            }
+            renderCart();
+            scrollToSection('simulator');
+        }
+
+        function updateCartQuantity(productId, delta) {
+            const id = parseInt(productId);
+            if (currentCart[id]) {
+                currentCart[id].quantity += delta;
+                if (currentCart[id].quantity <= 0) {
+                    delete currentCart[id];
+                }
+                renderCart();
+            }
+        }
+
+        function renderCart() {
+            const cartItemsContainer = document.getElementById('cartItems');
+            const cartTotalElement = document.getElementById('cartTotal');
+            let total = 0;
+            let listHtml = '';
+            
+            const cartItemsArray = Object.values(currentCart);
+
+            if (cartItemsArray.length === 0) {
+                document.getElementById('emptyCartMessage').classList.remove('hidden');
+                cartItemsContainer.innerHTML = '';
+            } else {
+                document.getElementById('emptyCartMessage').classList.add('hidden');
+
+                cartItemsArray.forEach(item => {
+                    const subtotal = item.price * item.quantity;
+                    total += subtotal;
+                    
+                    listHtml += `
+                        <li class="py-4 flex flex-col sm:flex-row justify-between items-start sm:items-center">
+                            <div class="flex-1 min-w-0 pr-4">
+                                <p class="text-base font-semibold text-gray-800">${item.name}</p>
+                                <p class="text-sm text-gray-500">${item.price.toFixed(2)} Bs c/u</p>
+                            </div>
+                            <div class="mt-2 sm:mt-0 flex items-center space-x-3">
+                                <button onclick="updateCartQuantity(${item.id}, -1)" class="bg-amber-100 text-amber-700 w-8 h-8 rounded-full flex items-center justify-center hover:bg-amber-200 transition">
+                                    <span class="font-bold text-lg leading-none">-</span>
+                                </button>
+                                <span class="font-bold w-6 text-center">${item.quantity}</span>
+                                <button onclick="updateCartQuantity(${item.id}, 1)" class="bg-amber-100 text-amber-700 w-8 h-8 rounded-full flex items-center justify-center hover:bg-amber-200 transition">
+                                    <span class="font-bold text-lg leading-none">+</span>
+                                </button>
+                                <span class="text-lg font-semibold w-20 text-right">${subtotal.toFixed(2)} Bs</span>
+                            </div>
+                        </li>
+                    `;
+                });
+                cartItemsContainer.innerHTML = listHtml;
+            }
+            
+            cartTotalElement.textContent = total.toFixed(2) + ' Bs';
+        }
+
+        // Asegurar que la sección de exploración sea la activa al cargar en móvil
+        if (window.innerWidth < 768) {
+             document.getElementById('explorer').classList.remove('hidden');
+             document.getElementById('tab-explorer').classList.add('tab-active');
+        } else {
+            // En desktop, todas son visibles por scroll
+            document.getElementById('explorer').classList.remove('hidden');
+            document.getElementById('stats').classList.remove('hidden');
+            document.getElementById('simulator').classList.remove('hidden');
+        }
+
+    </script>
+</body>
+</html>
