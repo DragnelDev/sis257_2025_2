@@ -1,4 +1,4 @@
-# sis457_pasteleria - Sistema de Gestión de Pedidos para Pastelería "Carmen"
+# Proyecto Final de Laboratorio | sis457_pasteleria - Sistema de Gestión de Ventas para Pastelería "Carmen"
 
 <p align="center">
     <img src="./assets/logo.png" alt="Logo de la Pasteleria Carmen" width="200" style="border-radius: 50%; object-fit: cover; aspect-ratio: 1/1;"/>
@@ -6,7 +6,7 @@
 
 ## 🍰 Descripción del Proyecto
 
-Este proyecto consiste en el desarrollo de un **Sistema de Gestión de Pedidos y Ventas** diseñado específicamente para la pastelería **"Carmen, ¡Un pedacito del cielo!"**.
+Este proyecto consiste en el desarrollo de un **Sistema de Gestión de Ventas y Pedidos** diseñado específicamente para la pastelería **"Carmen, ¡Un pedacito del cielo!"**.
 
 El sistema está orientado a facilitar la **venta y gestión de pedidos** de su catálogo de productos: pasteles, tartas, pies y cupcakes.
 
