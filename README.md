@@ -1,4 +1,4 @@
-# Proyecto Final de Laboratorio | sis457_pasteleria - Sistema de Gestión de Ventas para Pastelería "Carmen"
+# sis457_pasteleria - Sistema de Gestión de Ventas para Pastelería "Carmen"
 
 <p align="center">
     <img src="./assets/logo.png" alt="Logo de la Pasteleria Carmen" width="200" style="border-radius: 50%; object-fit: cover; aspect-ratio: 1/1;"/>
