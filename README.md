@@ -6,7 +6,7 @@
 
 ## 🍰 Descripción del Proyecto
 
-Este proyecto consiste en el desarrollo de un **Sistema de Gestión de Ventas y Pedidos** diseñado específicamente para la pastelería **"Carmen, ¡Un pedacito del cielo!"**.
+Este proyecto consiste en el desarrollo de un **Sistema de Gestión de Ventas/Pedidos** diseñado específicamente para la pastelería **"Carmen, ¡Un pedacito del cielo!"**.
 
 El sistema está orientado a facilitar la **venta y gestión de pedidos** de su catálogo de productos: pasteles, tartas, pies y cupcakes.
 
@@ -32,9 +32,10 @@ El modelo de datos se basa en las siguientes entidades clave:
 
 | Entidad | Propósito | Campos Clave (CRUD) | Eliminación Lógica | Observaciones |
 | :--- | :--- | :--- | :--- | :--- |
-| **Usuario** | Autenticación y Login al sistema. | `IdUsuario`, `Usuario`, `Clave`, `Rol` | **Sí** (`Estado`) |  |
-| **Producto** | Catálogo de pastelería disponible para la venta. | `IdProducto`, `Nombre`, `PrecioUnitario`, `TipoProducto` | **Sí** (`Estado`) |  |
-| **Cliente** | Contactos para la gestión de pedidos. | `IdCliente`, `NombreCompleto`, `Telefono`, `Email`, `Direccion` | **Sí** (`Estado`) |  |
+| **Usuario** | Autenticación y Login al sistema. | `IdUsuario`, `Usuario`, `Clave`, `Rol` | **Sí** (`Estado`) | |
+| **Producto** | Catálogo de pastelería disponible para la venta. | `IdProducto`, `Nombre`, `PrecioUnitario`, `TipoProducto`, `Descripcion` | **Sí** (`Estado`) | |
+| **Cliente** | Contactos para la gestión de pedidos. | `IdCliente`, `NombreCompleto`, `Telefono`, `Email`, `Direccion` | **Sí** (`Estado`) | **CRUD de Alta Prioridad.** |
+| **Proveedor** | Entidades que suministran materia prima. | `IdProveedor`, `Nombre`, `Telefono`, `Email`, `Direccion` | **Sí** (`Estado`) | **CRUD de Alta Prioridad.** |
 | **Pedido** | Cabecera de la transacción de venta. | `IdPedido`, `FechaEntrega`, `Total`, `IdCliente`, `IdUsuario` | **No** | Registro Histórico. |
 | **DetallePedido** | Detalle de los productos incluidos en cada pedido. | `IdDetallePedido`, `IdPedido`, `IdProducto`, `Cantidad` | **No** | Detalle de Registro. |
 
