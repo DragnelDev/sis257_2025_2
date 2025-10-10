@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carmen Pastelería - Pedidos Online</title>
+    <!-- Carga de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Estilos personalizados para la marca */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        :root {
+            --color-primary: #9B7669; /* Marrón de la marca */
+            --color-secondary: #E57373; /* Tono Rosa/Rojo para acentos */
+            --color-bg: #F5F5DC; /* Beige claro de fondo */
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-bg);
+            color: #333;
+        }
+        .card-product {
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+        .card-product:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .btn-primary {
+            background-color: var(--color-secondary);
+            transition: background-color 0.2s;
+        }
+        .btn-primary:hover {
+            background-color: #D35C5C; /* Tono más oscuro al pasar el mouse */
+        }
+        .input-filter {
+             /* Estilo base para inputs de filtro */
+            @apply p-2 border border-gray-300 rounded-lg focus:ring-color-primary focus:border-color-primary transition duration-150;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <div id="app" class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+        
+        <!-- HEADER / IDENTIDAD -->
+        <header class="text-center py-10 mb-8 rounded-xl shadow-lg bg-white">
+            <h1 class="text-5xl font-extrabold text-gray-800">Carmen Pastelería</h1>
+            <p class="text-xl mt-2 text-gray-500 italic">¡Un pedacito del cielo!</p>
+            <p class="mt-4 text-lg font-semibold text-color-primary">Tu pastelería solo por pedido - Agenda tu celebración.</p>
+        </header>
+
+        <!-- Pestañas de Navegación -->
+        <div class="flex border-b border-gray-300 mb-8 sticky top-0 bg-white z-10">
+            <button onclick="showSection('cliente')" id="tab-cliente" class="py-3 px-6 text-lg font-medium border-b-4 border-color-secondary text-color-secondary focus:outline-none transition duration-150">Hacer un Pedido</button>
+            <button onclick="showSection('admin')" id="tab-admin" class="py-3 px-6 text-lg font-medium border-b-4 border-transparent text-gray-500 hover:text-color-secondary hover:border-color-secondary focus:outline-none transition duration-150">Vista Administrador</button>
+        </div>
+
+        <!-- SECCIÓN CLIENTE (HACER PEDIDO) -->
+        <div id="cliente-section" class="space-y-12">
+            <h2 class="text-3xl font-bold text-gray-800 border-l-4 border-color-secondary pl-3">1. Nuestro Menú</h2>
+            
+            <!-- LISTADO DE PRODUCTOS (Basado en la imagen 2.jpg) -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Torta 5 Leches -->
+                <div id="prod-torta5leches" class="card-product bg-white rounded-xl shadow-md p-6 border-2 border-transparent hover:border-color-secondary" onclick="selectProduct('Torta de 5 Leches')">
+                    <h3 class="text-xl font-bold text-gray-800">TORTA DE 5 LECHES</h3>
+                    <p class="text-gray-600 mt-2">Clásico bizcocho empapado en una mezcla de cinco tipos de leche, ligero y cremoso.</p>
+                </div>
+                <!-- Torta Chocolate -->
+                <div id="prod-tortadechocolate" class="card-product bg-white rounded-xl shadow-md p-6 border-2 border-transparent hover:border-color-secondary" onclick="selectProduct('Torta de Chocolate')">
+                    <h3 class="text-xl font-bold text-gray-800">TORTA DE CHOCOLATE</h3>
+                    <p class="text-gray-600 mt-2">Intensa y húmeda, perfecta para los amantes del cacao puro.</p>
+                </div>
+                <!-- Tarta de Manzana -->
+                <div id="prod-tartademanzana" class="card-product bg-white rounded-xl shadow-md p-6 border-2 border-transparent hover:border-color-secondary" onclick="selectProduct('Tarta de Manzana')">
+                    <h3 class="text-xl font-bold text-gray-800">TARTA DE MANZANA</h3>
+                    <p class="text-gray-600 mt-2">Crujiente base y relleno suave con el toque justo de canela.</p>
+                </div>
+                <!-- Pie de Limón -->
+                <div id="prod-pieldelimon" class="card-product bg-white rounded-xl shadow-md p-6 border-2 border-transparent hover:border-color-secondary" onclick="selectProduct('Pie de Limón')">
+                    <h3 class="text-xl font-bold text-gray-800">PIE DE LIMÓN</h3>
+                    <p class="text-gray-600 mt-2">El equilibrio perfecto entre el ácido del limón y el dulce del merengue.</p>
+                </div>
+                <!-- Cupcakes Vainilla -->
+                <div id="prod-cupcakesdevainilla" class="card-product bg-white rounded-xl shadow-md p-6 border-2 border-transparent hover:border-color-secondary" onclick="selectProduct('Cupcakes de Vainilla')">
+                    <h3 class="text-xl font-bold text-gray-800">CUPCAKES DE VAINILLA</h3>
+                    <p class="text-gray-600 mt-2">Suaves y esponjosos con frosting de mantequilla. (Min. 6 unidades).</p>
+                </div>
+            </div>
+            <!-- Otros productos de ejemplo -->
+            <div class="text-center mt-6 text-gray-500">
+                <p>... y muchos más: Merengue, Red Velvet, Frutas, Roll selva, Tarta de arándano, Pie de maracuyá, Cupcakes de Zanahoria, Nuez, etc.</p>
+            </div>
+
+            <!-- FORMULARIO DE PEDIDO -->
+            <h2 class="text-3xl font-bold text-gray-800 border-l-4 border-color-secondary pl-3 pt-6">2. Detalle y Reserva (Mínimo 48h)</h2>
+            <form id="orderForm" class="bg-white p-8 rounded-xl shadow-lg space-y-6">
+                
+                <!-- Producto Seleccionado -->
+                <div class="mb-4">
+                    <label class="block text-gray-700 font-bold mb-2">Producto Seleccionado</label>
+                    <input type="text" id="selectedProduct" class="w-full p-3 border border-gray-300 rounded-lg bg-gray-100 font-semibold" value="" readonly required>
+                </div>
+
+                <!-- Personalización y Datos de Contacto -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="name" class="block text-gray-700 font-bold mb-2">Tu Nombre Completo</label>
+                        <input type="text" id="name" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-color-secondary focus:border-color-secondary" required>
+                    </div>
+                    <div>
+                        <label for="contact" class="block text-gray-700 font-bold mb-2">WhatsApp o Teléfono (Para confirmación de pago)</label>
+                        <input type="tel" id="contact" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-color-secondary focus:border-color-secondary" required>
+                    </div>
+                </div>
+
+                <!-- Fecha y Hora de Recogida/Entrega -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="pickupDate" class="block text-gray-700 font-bold mb-2">Fecha de Recogida/Entrega</label>
+                        <input type="date" id="pickupDate" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-color-secondary focus:border-color-secondary" required>
+                        <p id="dateError" class="text-red-500 text-sm mt-1 hidden">Debes solicitar con al menos 48 horas de anticipación.</p>
+                    </div>
+                    <div>
+                        <label for="pickupTime" class="block text-gray-700 font-bold mb-2">Hora de Recogida/Entrega</label>
+                        <input type="time" id="pickupTime" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-color-secondary focus:border-color-secondary" required>
+                    </div>
+                </div>
+                
+                <!-- Detalles de Personalización -->
+                <div>
+                    <label for="details" class="block text-gray-700 font-bold mb-2">Detalles de Personalización (Tamaño, mensaje, diseño)</label>
+                    <textarea id="details" rows="4" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-color-secondary focus:border-color-secondary" placeholder="Ej: Torta de 15 porciones. Decoración con flores. Mensaje: Feliz cumpleaños Alicia."></textarea>
+                </div>
+
+                <!-- Botón de Envío -->
+                <button type="submit" class="btn-primary w-full text-white font-bold py-3 rounded-lg shadow-md hover:shadow-lg transition duration-300">
+                    <span id="submitText">Enviar Pedido y Reservar</span>
+                    <svg id="loadingSpinner" class="animate-spin h-5 w-5 text-white inline-block ml-2 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                </button>
+                <p class="text-center text-sm text-gray-500 mt-4">
+                    Al enviar, se registra la reserva. La confirmación final y el pago se coordinarán por el contacto proporcionado.
+                </p>
+            </form>
+        </div>
+
+        <!-- SECCIÓN ADMINISTRADOR (MONITOR DE PEDIDOS) -->
+        <div id="admin-section" class="hidden space-y-8">
+            <h2 class="text-3xl font-bold text-gray-800 border-l-4 border-color-primary pl-3">Monitor de Pedidos Recibidos (Tiempo Real)</h2>
+            <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-md mb-4" role="alert">
+                <p class="font-bold">Modo de Simulación (Administrador):</p>
+                <p>Utiliza los filtros para organizar la producción. Solo los pedidos **Pendientes** pueden ser procesados.</p>
+            </div>
+
+            <!-- FILTROS DE ADMINISTRADOR (HU-A5) -->
+            <div class="bg-white p-4 rounded-xl shadow-md flex flex-col sm:flex-row gap-4 items-center">
+                <label for="statusFilter" class="font-semibold text-gray-700 whitespace-nowrap">Filtrar por Estado:</label>
+                <select id="statusFilter" onchange="loadOrders()" class="input-filter w-full sm:w-auto">
+                    <option value="">-- Todos los Estados --</option>
+                    <option value="Pendiente de Revisión y Pago">Pendiente de Pago</option>
+                    <option value="Pagado y en Producción">Pagado / Producción</option>
+                    <option value="Listo para Recoger">Listo para Recoger</option>
+                    <option value="Entregado">Entregado</option>
+                </select>
+
+                <label for="dateFilter" class="font-semibold text-gray-700 whitespace-nowrap">Fecha de Recogida:</label>
+                <input type="date" id="dateFilter" onchange="loadOrders()" class="input-filter w-full sm:w-auto">
+                
+                <button onclick="clearFilters()" class="bg-gray-200 text-gray-700 p-2 rounded-lg font-semibold hover:bg-gray-300 transition duration-150 w-full sm:w-auto">Limpiar Filtros</button>
+            </div>
+            
+            <div id="ordersList" class="space-y-4">
+                <!-- Los pedidos se cargarán aquí -->
+                <p class="text-center text-gray-500" id="loadingMessage">Cargando pedidos...</p>
+            </div>
+        </div>
+
+        <!-- MODAL DE CONFIRMACIÓN -->
+        <div id="confirmationModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center hidden z-50">
+            <div class="bg-white p-8 rounded-xl shadow-2xl max-w-md w-full m-4">
+                <h3 class="text-2xl font-bold text-color-secondary mb-4 flex items-center">
+                    <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                    ¡Reserva Registrada!
+                </h3>
+                <p class="text-gray-700 mb-4">Gracias por tu pedido. En breve, nos comunicaremos contigo vía **<span id="modalContact"></span>** para:</p>
+                <ul class="list-disc list-inside space-y-2 text-gray-600 mb-6 bg-gray-50 p-4 rounded-lg">
+                    <li>Verificar la disponibilidad para la fecha solicitada.</li>
+                    <li>Confirmar el precio final de tu personalización.</li>
+                    <li>Coordinar el método de **pago final**.</li>
+                </ul>
+                <div class="bg-color-bg p-4 rounded-lg text-center font-bold text-lg text-gray-800">
+                    ID de Reserva: <span id="modalOrderId" class="text-color-primary"></span>
+                </div>
+                <button onclick="closeModal()" class="btn-primary w-full text-white font-bold py-2 mt-6 rounded-lg">Entendido</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Firebase Imports -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, addDoc, onSnapshot, collection, query, serverTimestamp, updateDoc, where } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        
+        // Configuración y Variables Globales (MANDATORIO)
+        setLogLevel('Debug');
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        let db, auth, userId;
+        let isAuthReady = false;
+        
+        if (firebaseConfig) {
+            const app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+            
+            // 1. Inicialización y Autenticación
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+                    userId = user.uid;
+                    console.log("Usuario autenticado:", userId);
+                } else {
+                    try {
+                        if (initialAuthToken) {
+                            await signInWithCustomToken(auth, initialAuthToken);
+                        } else {
+                            await signInAnonymously(auth);
+                        }
+                    } catch (e) {
+                        console.error("Error al iniciar sesión:", e);
+                    }
+                }
+                isAuthReady = true;
+                // Una vez que la autenticación está lista, cargamos los pedidos para el administrador
+                // Esto también se llama automáticamente cuando se cambia a la vista de administrador.
+                loadOrders();
+            });
+        } else {
+            console.error("Firebase no está configurado. La funcionalidad de base de datos no estará disponible.");
+            isAuthReady = true; 
+            document.getElementById('loadingMessage').textContent = 'Base de datos no disponible (Modo Demo).';
+        }
+
+        // --- Funciones de Interfaz Comunes ---
+        window.openModal = function(orderId, contact) {
+            document.getElementById('modalOrderId').textContent = orderId;
+            document.getElementById('modalContact').textContent = contact;
+            document.getElementById('confirmationModal').classList.remove('hidden');
+        }
+
+        window.closeModal = function() {
+            document.getElementById('confirmationModal').classList.add('hidden');
+        }
+        
+        // --- Funciones del Cliente ---
+        window.selectProduct = function(productName) {
+            document.getElementById('selectedProduct').value = productName;
+            
+            // Resaltar la tarjeta seleccionada
+            document.querySelectorAll('.card-product').forEach(card => {
+                card.classList.remove('border-color-secondary');
+                card.classList.add('border-transparent');
+            });
+            // Genera ID limpio para la tarjeta
+            const cardId = 'prod-' + productName.toLowerCase().replace(/[^a-z0-9]+/g, '');
+            const selectedCard = document.getElementById(cardId);
+            if (selectedCard) {
+                selectedCard.classList.add('border-color-secondary');
+                selectedCard.classList.remove('border-transparent');
+            }
+        }
+
+        // Validación de 48 Horas (HU-C3)
+        function validateDate(dateString) {
+            const requestedDateTime = new Date(dateString);
+            const minimumDate = new Date();
+            // Añade 48 horas 
+            minimumDate.setTime(minimumDate.getTime() + (48 * 60 * 60 * 1000)); 
+
+            return requestedDateTime >= minimumDate;
+        }
+
+        // Manejador del Formulario de Pedido
+        document.getElementById('orderForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitButton = document.querySelector('#orderForm button[type="submit"]');
+            const submitText = document.getElementById('submitText');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+
+            // Mostrar spinner y deshabilitar botón
+            submitText.textContent = 'Enviando...';
+            loadingSpinner.classList.remove('hidden');
+            submitButton.disabled = true;
+
+            const product = document.getElementById('selectedProduct').value;
+            const name = document.getElementById('name').value;
+            const contact = document.getElementById('contact').value;
+            const date = document.getElementById('pickupDate').value;
+            const time = document.getElementById('pickupTime').value;
+            const details = document.getElementById('details').value;
+
+            const dateError = document.getElementById('dateError');
+
+            if (!product) {
+                // Usamos un modal o un mensaje en lugar de alert()
+                console.error("Por favor, selecciona un producto del menú.");
+                submitText.textContent = 'Enviar Pedido y Reservar';
+                loadingSpinner.classList.add('hidden');
+                submitButton.disabled = false;
+                return;
+            }
+
+            if (!validateDate(date + 'T' + time)) {
+                dateError.classList.remove('hidden');
+                submitText.textContent = 'Enviar Pedido y Reservar';
+                loadingSpinner.classList.add('hidden');
+                submitButton.disabled = false;
+                return;
+            } else {
+                dateError.classList.add('hidden');
+            }
+
+            if (!db) {
+                console.error("Error: Base de datos no disponible. El pedido no se puede guardar.");
+                submitText.textContent = 'Enviar Pedido y Reservar';
+                loadingSpinner.classList.add('hidden');
+                submitButton.disabled = false;
+                return;
+            }
+
+            try {
+                // Estructura del Pedido para Firestore
+                const newOrder = {
+                    product: product,
+                    clientName: name,
+                    clientContact: contact,
+                    pickupDate: date,
+                    pickupTime: time,
+                    details: details,
+                    status: 'Pendiente de Revisión y Pago', // Estado inicial (HU-A3)
+                    createdAt: serverTimestamp(),
+                    clientId: userId 
+                };
+
+                // Guardar en la colección pública de pedidos
+                const ordersRef = collection(db, `artifacts/${appId}/public/data/orders`);
+                const docRef = await addDoc(ordersRef, newOrder);
+
+                // Mostrar modal de confirmación (HU-C5)
+                openModal(docRef.id.substring(0, 8).toUpperCase(), contact);
+                
+                // Resetear formulario y estilo
+                this.reset();
+                document.getElementById('selectedProduct').value = '';
+                document.querySelectorAll('.card-product').forEach(card => {
+                    card.classList.remove('border-color-secondary');
+                    card.classList.add('border-transparent');
+                });
+
+            } catch (error) {
+                console.error("Error al guardar el pedido en Firestore:", error);
+            } finally {
+                submitText.textContent = 'Enviar Pedido y Reservar';
+                loadingSpinner.classList.add('hidden');
+                submitButton.disabled = false;
+            }
+        });
+
+
+        // --- Funciones del Administrador (HU-A1, HU-A3, HU-A5) ---
+        
+        // [NUEVA FUNCIÓN] Cambiar el estado del pedido (HU-A3)
+        window.updateOrderStatus = async function(orderId, newStatus) {
+            if (!db) {
+                console.error("Base de datos no disponible.");
+                return;
+            }
+            if (!confirm(`¿Estás seguro de cambiar el estado del pedido ${orderId.substring(0, 8).toUpperCase()} a "${newStatus}"?`)) {
+                return;
+            }
+
+            const orderDocRef = doc(db, `artifacts/${appId}/public/data/orders`, orderId);
+            try {
+                await updateDoc(orderDocRef, {
+                    status: newStatus,
+                    updatedAt: serverTimestamp() 
+                });
+                console.log(`Estado del pedido ${orderId} actualizado a: ${newStatus}`);
+                // onSnapshot se encargará de refrescar la lista
+            } catch (error) {
+                console.error("Error al actualizar el estado:", error);
+            }
+        }
+        
+        // [NUEVA FUNCIÓN] Limpiar Filtros
+        window.clearFilters = function() {
+            document.getElementById('statusFilter').value = '';
+            document.getElementById('dateFilter').value = '';
+            loadOrders();
+        }
+
+        // [MODIFICADA] loadOrders: Aplica filtros (HU-A5)
+        function loadOrders() {
+            if (!db || !isAuthReady) return;
+
+            const statusFilter = document.getElementById('statusFilter').value;
+            const dateFilter = document.getElementById('dateFilter').value;
+            const ordersRef = collection(db, `artifacts/${appId}/public/data/orders`);
+            const ordersList = document.getElementById('ordersList');
+            const loadingMessage = document.getElementById('loadingMessage');
+            
+            loadingMessage.classList.remove('hidden');
+            loadingMessage.textContent = 'Cargando pedidos...';
+
+            let q;
+            const queryConstraints = [];
+            
+            // Filtro por Estado (Si está seleccionado)
+            if (statusFilter) {
+                queryConstraints.push(where("status", "==", statusFilter));
+            }
+
+            // Filtro por Fecha de Recogida (Si está seleccionado)
+            // NOTA: Para consultas más robustas, Firestore requiere índices o rangos. 
+            // Para este MVP, usamos una coincidencia exacta en el campo 'pickupDate'.
+            if (dateFilter) {
+                queryConstraints.push(where("pickupDate", "==", dateFilter));
+            }
+            
+            // Crear la consulta con todos los filtros
+            q = query(ordersRef, ...queryConstraints);
+
+
+            // Suscripción en tiempo real (onSnapshot)
+            // Se usa el query 'q' que incluye o no los filtros
+            onSnapshot(q, (snapshot) => {
+                loadingMessage.classList.add('hidden');
+                
+                const orders = [];
+                snapshot.forEach(doc => {
+                    orders.push({ id: doc.id, ...doc.data() });
+                });
+
+                // Ordenar por fecha de creación (más reciente primero)
+                // Usamos el sort localmente ya que Firestore no permite orderBy sin índices complejos
+                orders.sort((a, b) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0));
+
+                renderOrders(orders);
+            }, (error) => {
+                console.error("Error al escuchar cambios en Firestore:", error);
+                ordersList.innerHTML = '<p class="text-red-500">Error al cargar pedidos. Consulta la consola.</p>';
+            });
+        }
+
+        // [MODIFICADA] renderOrders: Ahora incluye los botones de acción para cada estado
+        function renderOrders(orders) {
+            const ordersList = document.getElementById('ordersList');
+            ordersList.innerHTML = ''; 
+            
+            if (orders.length === 0) {
+                ordersList.innerHTML = '<p class="text-center text-gray-500">No se encontraron pedidos con los filtros seleccionados.</p>';
+                return;
+            }
+
+            orders.forEach(order => {
+                const dateRequested = order.pickupDate ? new Date(order.pickupDate + 'T00:00:00').toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' }) : 'N/A';
+                const timeRequested = order.pickupTime || 'N/A';
+                const orderIdShort = order.id.substring(0, 8).toUpperCase();
+                const timestamp = order.createdAt ? order.createdAt.toDate().toLocaleString('es-ES') : 'Fecha no disponible';
+
+                // Determinar colores y acciones (HU-A4)
+                let statusColor, actionButtons = '';
+                
+                switch (order.status) {
+                    case 'Pagado y en Producción':
+                        statusColor = 'bg-blue-100 text-blue-700 border-blue-500';
+                        actionButtons = `<button onclick="updateOrderStatus('${order.id}', 'Listo para Recoger')" class="update-status-btn bg-blue-500 text-white p-1 rounded text-sm hover:bg-blue-600 transition">Marcar como Listo</button>`;
+                        break;
+                    case 'Listo para Recoger':
+                        statusColor = 'bg-green-100 text-green-700 border-green-500';
+                        actionButtons = `<button onclick="updateOrderStatus('${order.id}', 'Entregado')" class="update-status-btn bg-green-500 text-white p-1 rounded text-sm hover:bg-green-600 transition">Marcar como Entregado</button>`;
+                        break;
+                    case 'Entregado':
+                        statusColor = 'bg-gray-200 text-gray-600 border-gray-400';
+                        actionButtons = `<span class="text-sm text-gray-500">Proceso Finalizado</span>`;
+                        break;
+                    case 'Pendiente de Revisión y Pago':
+                    default:
+                        statusColor = 'bg-yellow-100 text-yellow-700 border-yellow-500';
+                        actionButtons = `
+                            <button onclick="updateOrderStatus('${order.id}', 'Pagado y en Producción')" class="update-status-btn bg-color-secondary text-white p-1 rounded text-sm hover:bg-red-500 transition">Conf. Pago / Iniciar Producción</button>
+                            <span class="text-xs ml-2 text-gray-500">(Contactar cliente: ${order.clientContact})</span>
+                        `;
+                        break;
+                }
+
+
+                const orderCard = `
+                    <div class="bg-white p-6 rounded-xl shadow-md border-l-4 ${statusColor} space-y-3">
+                        <div class="flex justify-between items-start">
+                            <h4 class="text-xl font-bold text-gray-800">${order.product}</h4>
+                            <span class="px-3 py-1 text-sm font-semibold rounded-full ${statusColor.replace('border-l-4', '').split(' ')[0]}">${order.status}</span>
+                        </div>
+                        <p class="text-gray-700">
+                            <span class="font-semibold">Cliente:</span> ${order.clientName}
+                            <span class="ml-4 font-semibold">Contacto:</span> ${order.clientContact}
+                        </p>
+                        <p class="text-gray-700">
+                            <span class="font-semibold">Entrega Solicitada:</span> ${dateRequested} a las ${timeRequested}
+                        </p>
+                        <details class="mt-2 text-gray-600">
+                            <summary class="font-semibold cursor-pointer text-color-primary hover:text-color-secondary">Ver Detalles de Personalización</summary>
+                            <p class="mt-2 p-2 bg-gray-50 rounded-lg whitespace-pre-wrap">${order.details || 'No se proporcionaron detalles de personalización.'}</p>
+                        </details>
+                        <div class="mt-4 pt-3 border-t border-gray-100 flex flex-wrap gap-2 items-center">
+                            ${actionButtons}
+                        </div>
+                        <p class="text-gray-500 text-xs italic mt-2">
+                            ID: ${orderIdShort} | Recibido: ${timestamp}
+                        </p>
+                    </div>
+                `;
+                ordersList.innerHTML += orderCard;
+            });
+        }
+
+
+        // --- Lógica de la Interfaz ---
+        window.showSection = function(section) {
+            // Ocultar todas las secciones
+            document.getElementById('cliente-section').classList.add('hidden');
+            document.getElementById('admin-section').classList.add('hidden');
+
+            // Quitar estilos de todas las pestañas
+            document.getElementById('tab-cliente').classList.remove('border-color-secondary', 'text-color-secondary');
+            document.getElementById('tab-cliente').classList.add('border-transparent', 'text-gray-500', 'hover:text-color-secondary');
+            
+            document.getElementById('tab-admin').classList.remove('border-color-secondary', 'text-color-secondary');
+            document.getElementById('tab-admin').classList.add('border-transparent', 'text-gray-500', 'hover:text-color-secondary');
+
+            // Mostrar la sección y aplicar estilo a la pestaña activa
+            document.getElementById(section + '-section').classList.remove('hidden');
+            document.getElementById('tab-' + section).classList.add('border-color-secondary', 'text-color-secondary');
+            document.getElementById('tab-' + section).classList.remove('border-transparent', 'text-gray-500');
+
+            // Si es la vista de admin, asegurar que los pedidos se carguen
+            if (section === 'admin' && isAuthReady) {
+                loadOrders();
+            }
+        }
+        
+        // Inicializar mostrando la sección del cliente
+        window.onload = () => showSection('cliente');
+        
+    </script>
+</body>
+</html>
